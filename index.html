@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Personal Expense Tracker</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="app">
+
+    <header class="hero">
+        <div>
+            <p class="eyebrow">YOUR MONEY, YOUR CONTROL</p>
+            <h1>💸  Personal Expense Tracker</h1>
+            <p class="subtitle">
+                Track income, manage expenses, and save money.
+            </p>
+        </div>
+
+        <span class="date-pill" id="todayLabel"></span>
+    </header>
+
+    <!-- SUMMARY CARDS -->
+
+    <section class="summary-grid">
+
+        <article class="summary-card income-card">
+            <span>💚 Total Income</span>
+            <strong id="totalIncome">₹30000.00</strong>
+        </article>
+
+        <article class="summary-card expense-card">
+            <span>🧡 Total Expenses</span>
+            <strong id="totalExpenses">₹0.00</strong>
+        </article>
+
+        <article class="summary-card balance-card">
+            <span>💜 Current Balance</span>
+            <strong id="balance">₹30000.00</strong>
+        </article>
+
+        <article class="summary-card month-card">
+            <span>💙 This Month</span>
+            <strong id="monthExpenses">₹0.00</strong>
+        </article>
+
+    </section>
+
+    <main class="columns">
+
+        <!-- TRANSACTION FORM -->
+
+        <section class="panel">
+
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">ADD OR UPDATE</p>
+                    <h2 id="formTitle">New Transaction</h2>
+                </div>
+
+                <span class="icon-bubble">✍️</span>
+            </div>
+
+            <form id="transactionForm">
+
+                <input type="hidden" id="editId">
+
+                <label>Transaction Type</label>
+
+                <div class="type-switch">
+
+                    <label class="radio-option income-option">
+                        <input type="radio" name="type"
+                               value="income">
+                        <span>＋ Income</span>
+                    </label>
+
+                    <label class="radio-option expense-option">
+                        <input type="radio" name="type"
+                               value="expense" checked>
+                        <span>－ Expense</span>
+                    </label>
+
+                </div>
+
+                <label for="description">Description</label>
+
+                <input type="text" id="description"
+                       placeholder="Example: Grocery shopping"
+                       maxlength="70" required>
+
+                <div class="form-row">
+
+                    <div>
+                        <label for="amount">Amount (₹)</label>
+
+                        <input type="number" id="amount"
+                               placeholder="0.00"
+                               min="0.01" step="0.01" required>
+                    </div>
+
+                    <div>
+                        <label for="date">Date</label>
+
+                        <input type="date" id="date" required>
+                    </div>
+
+                </div>
+
+                <label for="category">Category</label>
+
+                <select id="category" required>
+                    <option value="Food">🍔 Food</option>
+                    <option value="Transport">🚌 Transport</option>
+                    <option value="Shopping">🛍️ Shopping</option>
+                    <option value="Bills">🧾 Bills</option>
+                    <option value="Education">📚 Education</option>
+                    <option value="Health">💊 Health</option>
+                    <option value="Entertainment">🎬 Entertainment</option>
+                    <option value="Salary">💼 Salary</option>
+                    <option value="Business">🏪 Business</option>
+                    <option value="Other">✨ Other</option>
+                </select>
+
+                <label for="notes">Notes (Optional)</label>
+
+                <textarea id="notes"
+                          placeholder="Add additional details..."
+                          rows="2"></textarea>
+
+                <div class="form-actions">
+
+                    <button class="btn primary" type="submit"
+                            id="saveButton">
+                        ＋ Add Transaction
+                    </button>
+
+                    <button class="btn light hidden"
+                            type="button" id="cancelEdit">
+                        Cancel
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+        <!-- EXPENSE CHART -->
+
+        <section class="panel">
+
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">YOUR SPENDING</p>
+                    <h2>Expense Breakdown</h2>
+                </div>
+
+                <span class="icon-bubble">📊</span>
+            </div>
+
+            <p class="muted">
+                See where your money goes by category.
+            </p>
+
+            <div class="chart-wrap">
+
+                <canvas id="expenseChart"></canvas>
+
+                <p id="emptyChart" class="empty-chart">
+                    Add expenses to see your chart.
+                </p>
+
+            </div>
+
+            <div class="chart-legend" id="chartLegend"></div>
+
+        </section>
+
+    </main>
+
+    <!-- TRANSACTION HISTORY -->
+
+    <section class="panel transactions-panel">
+
+        <div class="panel-heading">
+
+            <div>
+                <p class="eyebrow">TRANSACTION HISTORY</p>
+                <h2>All Transactions</h2>
+            </div>
+
+            <span class="count-badge" id="transactionCount">
+                0 records
+            </span>
+
+        </div>
+
+        <!-- SEARCH AND FILTERS -->
+
+        <div class="filters">
+
+            <input type="search" id="search"
+                   placeholder="🔎 Search description...">
+
+            <select id="typeFilter">
+                <option value="all">All Types</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+
+            <select id="categoryFilter">
+                <option value="all">All Categories</option>
+                <option>Food</option>
+                <option>Transport</option>
+                <option>Shopping</option>
+                <option>Bills</option>
+                <option>Education</option>
+                <option>Health</option>
+                <option>Entertainment</option>
+                <option>Salary</option>
+                <option>Business</option>
+                <option>Other</option>
+            </select>
+
+            <div class="date-filter">
+                <label for="fromDate">From</label>
+                <input type="date" id="fromDate">
+            </div>
+
+            <div class="date-filter">
+                <label for="toDate">To</label>
+                <input type="date" id="toDate">
+            </div>
+
+            <button class="btn light"
+                    id="clearFilters" type="button">
+                Reset Filters
+            </button>
+
+        </div>
+
+        <!-- TRANSACTION TABLE -->
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="transactionList"></tbody>
+
+            </table>
+
+            <div class="empty-state" id="emptyState">
+                <div>🧾</div>
+                <h3>No transactions found</h3>
+                <p>Add a transaction or change your filters.</p>
+            </div>
+
+        </div>
+
+        <div class="panel-footer">
+
+            <span id="showingLabel">
+                Showing 0 transactions
+            </span>
+
+            <button class="btn danger-outline"
+                    id="deleteAll" type="button">
+                Delete All Data
+            </button>
+
+        </div>
+
+    </section>
+
+    <footer>
+        Made with 💜 for smarter money habits.
+        Your records stay in this browser.
+    </footer>
+
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
